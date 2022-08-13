@@ -25,19 +25,49 @@ const handlingPrice = (price) => {
         }
         price = price * Math.pow(10, l)
     }
-    return price;
+    return price.toFixed(1);
+}
+
+const handlingPage = (priceTags) => {
+    document.querySelectorAll(priceTags).forEach((price) => {
+        if (!price.getAttribute("originalPrice")) {
+            price.setAttribute("originalPrice", price.innerText)
+            let newPrice = price.cloneNode(true)
+            newPrice.innerText = handlingPrice(parseFloat(price.innerText.replace(/[^\d^\.]+/g, '')))
+            newPrice.style.display = 'inline-block';
+            newPrice.style.padding = "0 0.5em 0 0.5em";
+            price.style.display = 'inline-block';
+            price.style.textDecoration = 'line-through';
+            price.parentNode.appendChild(newPrice)
+        }
+    });
 }
 
 const shopsList=[
     {
         name:'jd',
-        PriceTags:`.price-origin span,.p-price .price,.p-price strong,.p-price-fans .price,[class^='J-p-']`
+        priceTags:`.price-origin span,
+        .p-price .price,
+        .p-price strong,
+        .p-price-fans 
+        .price,[class^='J-p-']`
     },{
         name:'taobao',
-        PriceTags:`.price-value,.price strong,[class$='-price']:first-child`
+        priceTags:`.price-value,.price strong,
+        #mainsrp-p4pBottom [class$='-price']>:first-child,
+        #mainsrp-p4pRight [class$='-price'],
+        #J_PromoPriceNum,
+        .now-price .price`
     },{
         name:'tmall',
-        PriceTags:`[class*='Price--'],[class*='--price--'],.productPrice em,[class$='-price']:first-child`
+        priceTags:`[class*='Price--'],
+        [class*='--price--'],
+        .productPrice em,
+        a[class$='-price']>:first-child,
+        .tm-price,
+        p.price>:first-child,
+        .c-price,
+        .look_price`
     }]
 
 const matchShopSites = shopsList.find(element => {
@@ -54,18 +84,7 @@ const targetNodeAndConfig = {
 
 const callback = function (mutationsList, observer) {
     observer.disconnect()
-    document.querySelectorAll(matchShopSites.PriceTags).forEach((price) => {
-            if (!price.getAttribute("originalPrice")) {
-                price.setAttribute("originalPrice", price.innerText)
-                let newPrice = price.cloneNode(true)
-                console.log(handlingPrice(price.innerText.replace(/[^\d^\.]+/g, '')));
-                newPrice.innerText = handlingPrice(price.innerText.replace(/[^\d^\.]+/g, ''))
-                newPrice.style.display = 'inline-block';
-                price.style.display = 'inline-block';
-                price.style.textDecoration = 'line-through';
-                price.parentNode.appendChild(newPrice)
-            }
-        });
+    handlingPage(matchShopSites.priceTags)
     observer.observe(targetNodeAndConfig.targetNode, targetNodeAndConfig.config);
 };
 
@@ -73,4 +92,5 @@ if (matchShopSites) {
     console.log(matchShopSites)
     const observer = new MutationObserver(debounce(callback));
     observer.observe(targetNodeAndConfig.targetNode, targetNodeAndConfig.config);
+    handlingPage(matchShopSites.priceTags)
 }
