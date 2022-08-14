@@ -38,6 +38,7 @@ const handlingPage = (priceTags) => {
             newPrice.style.padding = "0 0.5em 0 0.5em";
             price.style.display = 'inline-block';
             price.style.textDecoration = 'line-through';
+            price.style.color = 'gray';
             price.parentNode.appendChild(newPrice)
         }
     });
