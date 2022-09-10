@@ -69,6 +69,15 @@ const shopsList=[
         p.price>:first-child,
         .c-price,
         .look_price`
+    },{
+        name:'amazon',
+        priceTags:`.a-price`
+    },{
+        name:'ebay',
+        priceTags:`[class$='__displayPrice'],
+        #prcIsum,
+        .item-info__price,
+        [class$='__price']`
     }]
 
 const matchShopSites = shopsList.find(element => {
